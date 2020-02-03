@@ -81,7 +81,7 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
         while (opModeIsActive()) {
 
             // Setup a variable for each drive wheel to save power level for telemetry
-            double ForwardPower = 0, BackwardPower = 0, FishTailPower = 0;
+            double ForwardPower = 0, BackwardPower = 0, FishTailPower = 0, LeftPower = 0, RightPower = 0, MiddlePower = 0;
 
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
@@ -97,30 +97,32 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
              BackwardPower  = gamepad1.left_trigger;
              ForwardPower = -gamepad1.right_trigger;
-             FishTailPower = -gamepad1.right_stick_x;
+             FishTailPower = -gamepad1.right_stick_x*2;
 
             // Send calculated power to wheels
-
-            if(gamepad1.right_stick_x == 0 && gamepad1.right_trigger == 0 && gamepad1.left_trigger == 0)
+            if(ForwardPower == 0 && BackwardPower == 0 && FishTailPower == 0)
             {
 
-                if(gamepad1.dpad_left = true)
+                if(gamepad1.dpad_left == true)
                 {
-                    BackwardPower  = -0.2;
-                    ForwardPower = 0.33;
-                    FishTailPower = -1;
+                    LeftPower = 0.5;
+                    RightPower = 0.33;
+                    MiddlePower = -0.66;
+
                 }
 
-                else if(gamepad1.dpad_right = true)
+                if(gamepad1.dpad_right == true)
                 {
-                    BackwardPower = -0.2;
-                    ForwardPower = 0.33;
-                    FishTailPower = -1;
+                    LeftPower = 0.33;
+                    RightPower = 0.33;
+                    MiddlePower = -0.66;
                 }
+
+                LeftWheel.setPower(LeftPower);
+                RightWheel.setPower(RightPower);
+                FishTail.setPower(MiddlePower);
 
             }
-
-            FishTailPower *= 2;
 
             LeftWheel.setPower(ForwardPower);
             RightWheel.setPower(ForwardPower);
@@ -130,7 +132,7 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "ForwardPower: (%.2f)\nBackwardPower: (%.2f)\nFishTailPower: (%.2f)", ForwardPower, BackwardPower, FishTailPower);
+            telemetry.addData("Motors", "ForwardPower: (%.2f)\nBackwardPower: (%.2f)\nFishTailPower: (%.2f)\nDpadLeft: %b\nDpadRight: %b", ForwardPower, BackwardPower, FishTailPower, gamepad1.dpad_left, gamepad1.dpad_right);
             telemetry.update();
         }
     }
