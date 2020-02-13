@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -55,6 +56,15 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
     private DcMotor LeftWheel = null;
     private DcMotor RightWheel = null;
     private DcMotor FishTail = null;
+    private DcMotor LiftMotor = null;
+    private DcMotor ExtendMotor = null;
+
+    static final double INCREMENT = 0.1;
+    static final double MAX_POS_Clamp =  1.0, MAX_POS_Move = 1.0;
+    static final double MIN_POS_Clamp =  0.0, MIN_POS_Move = 0.0;
+
+    private Servo Clamp_Servo, Move_Servo_1, Move_Servo_2;
+    double  Position_Clamp = 0.5, Position_Move = 0.5;
 
     @Override
     public void runOpMode() {
@@ -67,6 +77,11 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
         LeftWheel  = hardwareMap.get(DcMotor.class, "LeftWheel");
         RightWheel = hardwareMap.get(DcMotor.class, "RightWheel");
         FishTail = hardwareMap.get(DcMotor.class, "FishTail");
+        LiftMotor = hardwareMap.get(DcMotor.class, "LiftMotor");
+        Clamp_Servo = hardwareMap.get(Servo.class, "Clamp_Servo");
+        Move_Servo_1 = hardwareMap.get(Servo.class, "Move_Servo_1");
+        Move_Servo_2 = hardwareMap.get(Servo.class, "Move_Servo_2");
+        ExtendMotor = hardwareMap.get(DcMotor.class, "ExtendMotor");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -100,28 +115,90 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
              FishTailPower = -gamepad1.right_stick_x*2;
 
             // Send calculated power to wheels
-            if(ForwardPower == 0 && BackwardPower == 0 && FishTailPower == 0)
+            if(gamepad1.dpad_down == true)
             {
+                ExtendMotor.setPower(0.5);
+            }
 
-                if(gamepad1.dpad_left == true)
+            if(gamepad1.dpad_up == true)
+            {
+                ExtendMotor.setPower(-0.5);
+            }
+
+            if (gamepad1.a == true)
+            {
+                if (Position_Clamp <= MAX_POS_Clamp)
                 {
-                    LeftPower = 0.5;
-                    RightPower = 0.33;
-                    MiddlePower = -0.66;
-
+                    Position_Clamp += INCREMENT ;
                 }
+            }
 
-                if(gamepad1.dpad_right == true)
+            else if(gamepad1.b == true)
+            {
+                if (Position_Clamp >= MIN_POS_Clamp)
                 {
-                    LeftPower = 0.33;
-                    RightPower = 0.33;
-                    MiddlePower = -0.66;
+                    Position_Clamp -= INCREMENT;
                 }
+            }
 
-                LeftWheel.setPower(LeftPower);
-                RightWheel.setPower(RightPower);
-                FishTail.setPower(MiddlePower);
+            if(gamepad1.left_bumper == true)
+            {
+                if(Position_Move >= MIN_POS_Move)
+                {
+                    Position_Move -= INCREMENT;
+                }
+            }
 
+            else if(gamepad1.right_bumper == true)
+            {
+                if(Position_Move >= MAX_POS_Move)
+                {
+                    Position_Move += INCREMENT;
+                }
+            }
+
+            if(gamepad1.dpad_left == true)
+            {
+                LeftPower = -0.33;
+                RightPower = -0.33;
+                MiddlePower = -0.67;
+            }
+
+            if(gamepad1.dpad_right == true)
+            {
+                LeftPower = -0.33;
+                RightPower = 0.4;
+                MiddlePower = 0.67;
+            }
+
+            if(gamepad1.x == true)
+            {
+                LiftMotor.setPower(0.5);
+            }
+
+            else if(gamepad1.y == true)
+            {
+                LiftMotor.setPower(-0.5);
+            }else{
+                LiftMotor.setPower(0);
+            }
+
+
+            LeftWheel.setPower(LeftPower);
+            RightWheel.setPower(RightPower);
+            FishTail.setPower(MiddlePower);
+
+            if(gamepad1.left_stick_x > 0)
+            {
+                LeftWheel.setPower(-1);
+                RightWheel.setPower(1);
+                FishTail.setPower(-1);
+            }
+            else if(gamepad1.left_stick_x < 0)
+            {
+                LeftWheel.setPower(1);
+                RightWheel.setPower(-1);
+                FishTail.setPower(1);
             }
 
             LeftWheel.setPower(ForwardPower);
@@ -129,6 +206,12 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
             LeftWheel.setPower(BackwardPower);
             RightWheel.setPower(BackwardPower);
             FishTail.setPower(FishTailPower);
+
+            Clamp_Servo.setPosition(Position_Clamp);
+            Move_Servo_1.setPosition(Position_Move);
+            Move_Servo_2.setPosition(Position_Move);
+            //sleep(CYCLE_MS);
+            //idle();
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
