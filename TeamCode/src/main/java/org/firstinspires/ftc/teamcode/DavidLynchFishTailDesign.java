@@ -48,7 +48,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="David Lynch: Fish Tail Design", group="Linear Opmode")
+@TeleOp(name="New Design Code", group="Linear Opmode")
 public class DavidLynchFishTailDesign extends LinearOpMode {
 
     // Declare OpMode members.
@@ -57,7 +57,7 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
     private DcMotor RightWheel = null;
     private DcMotor FishTail = null;
     private DcMotor LiftMotor = null;
-    private DcMotor ExtendMotor = null;
+//    private DcMotor ExtendMotor = null;
 
     static final double INCREMENT = 0.1;
     static final double MAX_POS_Clamp =  1.0, MAX_POS_Move = 1.0;
@@ -81,7 +81,7 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
         Clamp_Servo = hardwareMap.get(Servo.class, "Clamp_Servo");
         Move_Servo_1 = hardwareMap.get(Servo.class, "Move_Servo_1");
         Move_Servo_2 = hardwareMap.get(Servo.class, "Move_Servo_2");
-        ExtendMotor = hardwareMap.get(DcMotor.class, "ExtendMotor");
+//        ExtendMotor = hardwareMap.get(DcMotor.class, "ExtendMotor");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -115,16 +115,16 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
              FishTailPower = -gamepad1.right_stick_x*2;
 
             // Send calculated power to wheels
-            if(gamepad1.dpad_down == true)
-            {
-                ExtendMotor.setPower(0.5);
-            }
-
-            if(gamepad1.dpad_up == true)
-            {
-                ExtendMotor.setPower(-0.5);
-            }
-
+//            if(gamepad1.dpad_down == true)
+//            {
+//                ExtendMotor.setPower(0.5);
+//            }
+//
+//            if(gamepad1.dpad_up == true)
+//            {
+//                ExtendMotor.setPower(-0.5);
+//            }
+            //Use this for the clamps for the robot
             if (gamepad1.a == true)
             {
                 if (Position_Clamp <= MAX_POS_Clamp)
@@ -216,6 +216,7 @@ public class DavidLynchFishTailDesign extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "ForwardPower: (%.2f)\nBackwardPower: (%.2f)\nFishTailPower: (%.2f)\nDpadLeft: %b\nDpadRight: %b", ForwardPower, BackwardPower, FishTailPower, gamepad1.dpad_left, gamepad1.dpad_right);
+            telemetry.addData("Lift", "lift power: %.2f",LiftMotor.getPowerFloat());
             telemetry.update();
         }
     }
