@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -13,27 +14,28 @@ public class Probox_Config
     public DcMotor FishTail = null;
     public DcMotor LiftMotor = null;
     public DcMotor ExtendMotor = null;
-    public HardwareMap mapping;
+    public Servo Clamp_Servo = null;
+    public Servo Move_Servo_1 = null; // move servos are used to clamp the foundation
+    public Servo Move_Servo_2 = null;
+
+    public HardwareMap mapping; // the mapping object for the devices
 
     public final double INCREMENT = 0.01;
     public final double MAX_POS_Clamp =  1.0, MAX_POS_Move = 1.0;
     public final double MIN_POS_Clamp =  0.0, MIN_POS_Move = 0.0;
 
-    public Servo Clamp_Servo, Move_Servo_1, Move_Servo_2;
-    double  Position_Clamp = 1, Position_Move = 1, Move_Servo_Pos = 1;
-    double ForwardPower = 0, BackwardPower = 0, FishTailPower = 0, LeftPower = 0, RightPower = 0, MiddlePower = 0;
+    public double  Position_Clamp = 1, Position_Move = 1, Move_Servo_Pos = 1;
+    public double ForwardPower = 0, BackwardPower = 0, FishTailPower = 0, LeftPower = 0, RightPower = 0;
+
+    public int lift_min_position = 0;
+    public int extend_min_position = 0;
+    public int lift_max_position = 0;
+    public int extend_max_position = 0;
+
+
 
     public void HardwareMapAll(HardwareMap mapping)
     {
-        LeftWheel.setDirection(DcMotor.Direction.FORWARD);
-        RightWheel.setDirection(DcMotor.Direction.REVERSE);
-
-        LiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        ExtendMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        LiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        ExtendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         this.mapping = mapping;
         LeftWheel  = this.mapping.get(DcMotor.class, "LeftWheel");
         RightWheel = this.mapping.get(DcMotor.class, "RightWheel");
@@ -43,5 +45,37 @@ public class Probox_Config
         Move_Servo_1 = this.mapping.get(Servo.class, "Move_Servo_1");
         Move_Servo_2 = this.mapping.get(Servo.class, "Move_Servo_2");
         ExtendMotor = this.mapping.get(DcMotor.class, "ExtendMotor");
+
+        // Set the direction of the motors and servo
+        LeftWheel.setDirection(DcMotor.Direction.FORWARD);
+        RightWheel.setDirection(DcMotor.Direction.REVERSE);
+        FishTail.setDirection(DcMotorSimple.Direction.FORWARD);
+        LiftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        ExtendMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        Clamp_Servo.setDirection(Servo.Direction.FORWARD);
+        Move_Servo_1.setDirection(Servo.Direction.FORWARD);
+        Move_Servo_2.setDirection(Servo.Direction.FORWARD);
+
+        //Reset the encoders for all the motors and set them to run in encoder mode
+        LeftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FishTail.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ExtendMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        LeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FishTail.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ExtendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // set the maximum and minimum values for the lift system motors
+        lift_min_position = LiftMotor.getCurrentPosition() +144;
+        extend_min_position = ExtendMotor.getCurrentPosition()+144;
+        lift_max_position = LiftMotor.getCurrentPosition() +5100;
+        extend_max_position = ExtendMotor.getCurrentPosition()+4300;
+
+
     }
 }
