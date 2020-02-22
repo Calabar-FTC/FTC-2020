@@ -73,45 +73,31 @@ public class Probox_Autonomous extends LinearOpMode {
     private Probox_Config config = new Probox_Config();
     private ElapsedTime     runtime = new ElapsedTime();
 
-    static final double     Counts_Per_Rev = 1440 ;    // eg: TETRIX Motor Encoder
-    static final double     Drive_Gear_Reduction = 1.0 ;     // This is < 1.0 if geared UP
-    static final double     Wheel_Diameter = 10.16 ;     // For figuring circumference
-    static final double     Counts_Per_Cm = (Counts_Per_Rev * Drive_Gear_Reduction) /
-                                                      (Wheel_Diameter * 3.1415);
-    static final double     Speed = 0.6;
-    static final double     Turn_Speed = 0.5;
+    static final double Counts_Per_Rev = 1440;    // eg: TETRIX Motor Encoder
+    static final double Wheel_Diameter = 10.16;     // to get the circumfrence of the wheel
+    static final double Speed = 0.6;
+    static final double distance_per_rev = Math.PI * Wheel_Diameter;
 
     @Override
     public void runOpMode() {
-
-        /*
-         * Initialize the drive system variables.
-         * The init() method of the hardware class does all the work here
-         */
         config.HardwareMapAll(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
 
-        config.LeftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        config.RightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        config.LeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        config.RightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0",  "Starting at %7d :%7d",
-                          config.LeftWheel.getCurrentPosition(),
-                          config.RightWheel.getCurrentPosition());
+                config.LeftWheel.getCurrentPosition(),
+                config.RightWheel.getCurrentPosition());
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(Speed,  48,   5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderDrive(Speed,100,5);  // S1: Forward 47 Inches with 5 Sec timeout
+        config.Clamp_Servo.setPosition(1);
+
 
         sleep(1000);     // pause for servos to move
 
@@ -119,43 +105,36 @@ public class Probox_Autonomous extends LinearOpMode {
         telemetry.update();
     }
 
-    /*
-     *  Method to perfmorm a relative move, based on encoder counts.
-     *  Encoders are not reset as the move is based on the current position.
-     *  Move will stop if any of three conditions occur:
-     *  1) Move gets to the desired position
-     *  2) Move runs out of time
-     *  3) Driver stops the opmode running.
-     */
-    public void encoderDrive(double speed,
-                             double distance,
-                             double timeoutS) {
 
+    public void encoderDrive(double speed, double distance, double timeoutS)
+    {
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            config.LeftWheel.setTargetPosition(100);
-            config.RightWheel.setTargetPosition(100);
+            int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
+            int Left_wheel_pos= config.LeftWheel.getCurrentPosition();
+            int Right_wheel_pos= config.RightWheel.getCurrentPosition();
+
+            config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
+            config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
 
             // Turn On RUN_TO_POSITION
             config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
+            config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
 
             // reset the timeout time and start motion.
             runtime.reset();
             config.LeftWheel.setPower(Math.abs(speed));
             config.RightWheel.setPower(Math.abs(speed));
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+
             while (opModeIsActive() &&
                    (runtime.seconds() < timeoutS) &&
-                   (config.LeftWheel.isBusy() && config.RightWheel.isBusy() && config.FishTail.isBusy())) {
+                   (config.LeftWheel.isBusy() && config.RightWheel.isBusy())) {
 
                 // Display it for the driver.
                 telemetry.addData("Path1",  "Running to 100\n");
