@@ -25,7 +25,7 @@ public class Probox_Config
     public final double MIN_POS_Clamp =  0.0, MIN_POS_Move = 0.0;
 
     public double  Position_Clamp = 1, Position_Move = 1, Move_Servo_Pos = 1;
-    public double ForwardPower = 0, BackwardPower = 0, FishTailPower = 0, LeftPower = 0, RightPower = 0;
+    public double ForwardPower = 0, BackwardPower = 0, FishTailPower = 0, LeftPower = 0, RightPower = 0, MiddlePower;
 
     public int lift_min_position = 0;
     public int extend_min_position = 0;
