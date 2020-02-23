@@ -34,6 +34,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Locale;
+
 @TeleOp(name="Probox: Controls", group="FTC 2020")
 public class Probox_Controls extends LinearOpMode
 {
@@ -49,6 +53,9 @@ public class Probox_Controls extends LinearOpMode
         config.HardwareMapAll(hardwareMap);
         telemetry.addData("Configuration", "Completed");
         telemetry.update();
+
+        config.Move_Servo_1.setPosition(0);
+        config.Move_Servo_2.setPosition(1);
 
         waitForStart();
 
@@ -96,9 +103,9 @@ public class Probox_Controls extends LinearOpMode
         //360 degree turn to the right
         else if(gamepad1.left_stick_x < 0)
         {
-            config.LeftPower = 1*gamepad1.left_stick_x;
-            config.RightPower = -1*gamepad1.left_stick_x;
-            config.FishTailPower = 1*gamepad1.left_stick_x;
+            config.LeftPower = 1*-gamepad1.left_stick_x;
+            config.RightPower = -1*-gamepad1.left_stick_x;
+            config.FishTailPower = 1*-gamepad1.left_stick_x;
         }
         else
         {
@@ -132,7 +139,7 @@ public class Probox_Controls extends LinearOpMode
         // lift integration
         if(gamepad2.y)
         {
-            if(config.LiftMotor.getCurrentPosition() < config.lift_max_position)
+            if((config.LiftMotor.getCurrentPosition() < config.lift_mid_position) || (config.colorSensor.green() < config.greenColorStop && config.colorSensor.blue() < config.blueColorStop&& config.distanceSensor.getDistance(DistanceUnit.CM) > config.min_colo_distance))
             {
                 config.LiftMotor.setPower(0.5);
             }
@@ -165,7 +172,8 @@ public class Probox_Controls extends LinearOpMode
             config.LiftMotor.setPower(0);
             config.ExtendMotor.setPower(0);
         }
-
+        telemetry.addData("Blue ", config.colorSensor.blue());
+        telemetry.addData("color and distance","color green: %d | distance: %s",config.colorSensor.green(),String.format(Locale.US, "%.02f", config.distanceSensor.getDistance(DistanceUnit.CM)));
         telemetry.addData("Lift Mechanism","lift1: %d | lift2: %d", config.LiftMotor.getCurrentPosition(), config.ExtendMotor.getCurrentPosition());
     }
 
@@ -173,7 +181,6 @@ public class Probox_Controls extends LinearOpMode
     {
         if(gamepad2.a)
         {
-
             if(config.Position_Clamp <= config.MAX_POS_Clamp)
             {
                 config.Position_Clamp += config.INCREMENT ;

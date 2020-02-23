@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,6 +19,8 @@ public class Probox_Config
     public Servo Clamp_Servo = null;
     public Servo Move_Servo_1 = null; // move servos are used to clamp the foundation
     public Servo Move_Servo_2 = null;
+    public ColorSensor colorSensor;
+    public DistanceSensor distanceSensor;
 
     public HardwareMap mapping; // the mapping object for the devices
 
@@ -24,13 +28,16 @@ public class Probox_Config
     public final double MAX_POS_Clamp =  1.0, MAX_POS_Move = 1.0;
     public final double MIN_POS_Clamp =  0.0, MIN_POS_Move = 0.0;
 
-    public double  Position_Clamp = 1, Position_Move = 1, Move_Servo_Pos = 1;
+    public double  Position_Clamp = 1, Position_Move = 0.05, Move_Servo_Pos = 0.05;
     public double ForwardPower = 0, BackwardPower = 0, FishTailPower = 0, LeftPower = 0, RightPower = 0;
 
     public int lift_min_position = 0;
     public int extend_min_position = 0;
-    public int lift_max_position = 0;
+    public int lift_mid_position = 0;
     public int extend_max_position = 0;
+    public int greenColorStop = 350;
+    public int blueColorStop = 200;
+    public double min_colo_distance = 6;
 
 
 
@@ -45,6 +52,10 @@ public class Probox_Config
         Move_Servo_1 = this.mapping.get(Servo.class, "Move_Servo_1");
         Move_Servo_2 = this.mapping.get(Servo.class, "Move_Servo_2");
         ExtendMotor = this.mapping.get(DcMotor.class, "ExtendMotor");
+        colorSensor = this.mapping.get(ColorSensor.class, "color_distance");
+        distanceSensor = this.mapping.get(DistanceSensor.class, "color_distance");
+
+
 
         // Set the direction of the motors and servo
         LeftWheel.setDirection(DcMotor.Direction.FORWARD);
@@ -71,10 +82,12 @@ public class Probox_Config
         ExtendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // set the maximum and minimum values for the lift system motors
-        lift_min_position = LiftMotor.getCurrentPosition() +144;
-        extend_min_position = ExtendMotor.getCurrentPosition()+144;
-        lift_max_position = LiftMotor.getCurrentPosition() +5100;
-        extend_max_position = ExtendMotor.getCurrentPosition()+4300;
+        lift_min_position = LiftMotor.getCurrentPosition();
+        extend_min_position = ExtendMotor.getCurrentPosition()+100;
+        lift_mid_position = (int) ((LiftMotor.getCurrentPosition() + 5100)*0.75);
+        extend_max_position = ExtendMotor.getCurrentPosition()+3500;
+        greenColorStop = colorSensor.green()+150;
+        blueColorStop = colorSensor.blue()+100;
 
 
     }
