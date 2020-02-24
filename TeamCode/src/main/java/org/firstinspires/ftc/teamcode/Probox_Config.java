@@ -17,6 +17,7 @@ public class Probox_Config
     public DcMotor LiftMotor = null;
     public DcMotor ExtendMotor = null;
     public Servo Clamp_Servo = null;
+    public Servo Clamp_Servo_2 = null;
     public Servo Move_Servo_1 = null; // move servos are used to clamp the foundation
     public Servo Move_Servo_2 = null;
     public ColorSensor colorSensor;
@@ -49,13 +50,12 @@ public class Probox_Config
         FishTail = this.mapping.get(DcMotor.class, "FishTail");
         LiftMotor = this.mapping.get(DcMotor.class, "LiftMotor");
         Clamp_Servo = this.mapping.get(Servo.class, "Clamp_Servo");
+        Clamp_Servo_2 = this.mapping.get(Servo.class, "Clamp_Servo_2");
         Move_Servo_1 = this.mapping.get(Servo.class, "Move_Servo_1");
         Move_Servo_2 = this.mapping.get(Servo.class, "Move_Servo_2");
         ExtendMotor = this.mapping.get(DcMotor.class, "ExtendMotor");
         colorSensor = this.mapping.get(ColorSensor.class, "color_distance");
         distanceSensor = this.mapping.get(DistanceSensor.class, "color_distance");
-
-
 
         // Set the direction of the motors and servo
         LeftWheel.setDirection(DcMotor.Direction.FORWARD);
@@ -65,6 +65,7 @@ public class Probox_Config
         ExtendMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         Clamp_Servo.setDirection(Servo.Direction.FORWARD);
+        Clamp_Servo_2.setDirection(Servo.Direction.FORWARD);
         Move_Servo_1.setDirection(Servo.Direction.FORWARD);
         Move_Servo_2.setDirection(Servo.Direction.FORWARD);
 

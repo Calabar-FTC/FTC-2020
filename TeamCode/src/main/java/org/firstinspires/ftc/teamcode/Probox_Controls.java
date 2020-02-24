@@ -181,7 +181,7 @@ public class Probox_Controls extends LinearOpMode
     {
         if(gamepad2.a)
         {
-            config.Position_Clamp = 1 ;
+            config.Position_Clamp = 1;
         }
 
         else if(gamepad2.b)
@@ -195,6 +195,7 @@ public class Probox_Controls extends LinearOpMode
         }
 
         config.Clamp_Servo.setPosition(config.Position_Clamp);
+        config.Clamp_Servo_2.setPosition(-config.Position_Clamp);
         telemetry.addData("Clamp","position: %.2f",config.Clamp_Servo.getPosition());
     }
 

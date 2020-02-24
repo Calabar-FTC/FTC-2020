@@ -75,7 +75,7 @@ public class Probox_Autonomous extends LinearOpMode {
 
     static final double Counts_Per_Rev = 1440;    // eg: TETRIX Motor Encoder
     static final double Wheel_Diameter = 10.16;     // to get the circumfrence of the wheel
-    static final double Speed = 0.6;
+    static final double Speed = 1;
     static final double distance_per_rev = Math.PI * Wheel_Diameter;
 
     @Override
@@ -95,26 +95,32 @@ public class Probox_Autonomous extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        encoderDrive(Speed,100,5);  // S1: Forward 47 Inches with 5 Sec timeout
-        config.Clamp_Servo.setPosition(1);
+//        lateral_b(60, 10);
+//        move_a(Speed, 120, 10);
+//        sleep(10);
+//        lateral_b(60,10);
+        turn(0.5, 30, 10);
+        //drop_block();
 
 
-        sleep(1000);     // pause for servos to move
+//        sleep(1000);     // pause for servos to move
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
 
-
-    public void encoderDrive(double speed, double distance, double timeoutS)
+    public void move_a(double speed, double distance, double timeoutS)
     {
         // Ensure that the opmode is still active
-        if (opModeIsActive()) {
+        if (opModeIsActive())
+        {
+
+            nuetral();
 
             // Determine new target position, and pass to motor controller
             int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
-            int Left_wheel_pos= config.LeftWheel.getCurrentPosition();
-            int Right_wheel_pos= config.RightWheel.getCurrentPosition();
+            int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
+            int Right_wheel_pos = config.RightWheel.getCurrentPosition();
 
             config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
             config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
@@ -123,24 +129,54 @@ public class Probox_Autonomous extends LinearOpMode {
             config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+            // reset the timeout time and start motion.
+            runtime.reset();
+            config.LeftWheel.setPower(speed);
+            config.RightWheel.setPower(speed);
+
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (config.LeftWheel.isBusy() && config.RightWheel.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+            brake();
+        }
+    }
+
+    public void move_b(double speed, double distance, double timeoutS)
+    {
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
+            int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
+            int Right_wheel_pos = config.RightWheel.getCurrentPosition();
+
             config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
             config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
+
+            // Turn On RUN_TO_POSITION
+            config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
             config.LeftWheel.setPower(Math.abs(speed));
             config.RightWheel.setPower(Math.abs(speed));
 
-
             while (opModeIsActive() &&
-                   (runtime.seconds() < timeoutS) &&
-                   (config.LeftWheel.isBusy() && config.RightWheel.isBusy())) {
+                    (runtime.seconds() < timeoutS) &&
+                    (config.LeftWheel.isBusy() && config.RightWheel.isBusy())) {
 
                 // Display it for the driver.
                 telemetry.addData("Path1",  "Running to 100\n");
                 telemetry.addData("Path2",  "Current Position: %7d",
-                                            config.LeftWheel.getCurrentPosition(),
-                                            config.RightWheel.getCurrentPosition());
+                        config.LeftWheel.getCurrentPosition(),
+                        config.RightWheel.getCurrentPosition());
                 telemetry.update();
             }
 
@@ -154,4 +190,162 @@ public class Probox_Autonomous extends LinearOpMode {
             //  sleep(250);   // optional pause after each move
         }
     }
+
+    public void move_c(double speed, double distance, double timeoutS)
+    {
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
+            int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
+            int Right_wheel_pos = config.RightWheel.getCurrentPosition();
+
+            config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
+            config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
+
+            // Turn On RUN_TO_POSITION
+            config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            config.LeftWheel.setPower(Math.abs(speed));
+            config.RightWheel.setPower(Math.abs(speed));
+
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (config.LeftWheel.isBusy() && config.RightWheel.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to 100\n");
+                telemetry.addData("Path2",  "Current Position: %7d",
+                        config.LeftWheel.getCurrentPosition(),
+                        config.RightWheel.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            config.LeftWheel.setPower(0);
+            config.RightWheel.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            config.LeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            config.RightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //  sleep(250);   // optional pause after each move
+        }
+    }
+
+    public void lateral_b(double distance, double timeoutS)
+    {
+        if (opModeIsActive())
+        {
+
+            nuetral();
+
+            int distance_travel = (int) (distance / distance_per_rev * Counts_Per_Rev);
+            int Fish_Tail_pos = config.FishTail.getCurrentPosition();
+
+            config.LeftPower = -0.33;
+            config.RightPower = 0.4;
+            config.FishTailPower = 0.67;
+
+            config.FishTail.setTargetPosition(Fish_Tail_pos + distance_travel);
+
+            config.FishTail.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            config.LeftWheel.setPower(config.LeftPower);
+            config.RightWheel.setPower(config.RightPower);
+            config.FishTail.setPower(config.FishTailPower);
+
+            while (opModeIsActive() && (runtime.seconds() < timeoutS)) {
+                // Display it for the driver.
+
+                if (!config.FishTail.isBusy()) {
+                    config.LeftWheel.setPower(0);
+                    config.RightWheel.setPower(0);
+                    config.FishTail.setPower(0);
+                    brake();
+                    break;
+                }
+
+                telemetry.addData("FishTail Count:", config.FishTail.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+            brake();
+
+        }
+
+    }
+
+    public void nuetral()
+    {
+        config.LeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        config.RightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        config.FishTail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+    }
+
+    public void brake()
+    {
+        config.LeftWheel.setPower(0);
+        config.RightWheel.setPower(0);
+        config.FishTail.setPower(0);
+
+        config.LeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        config.RightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        config.FishTail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        config.LeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        config.RightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        config.FishTail.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+
+    public void drop_block()
+    {
+
+    }
+
+    public void turn(double speed, double distance, double timeoutS)
+    {
+        nuetral();
+
+        config.LeftPower = 1*speed;
+        config.RightPower = 1*speed;
+        config.FishTailPower = 1*speed;
+
+        int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
+        int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
+        int Right_wheel_pos = config.RightWheel.getCurrentPosition();
+        int Fish_Tail_pos = config.RightWheel.getCurrentPosition();
+
+        config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
+        config.RightWheel.setTargetPosition(Right_wheel_pos-distance_travel);
+        config.FishTail.setTargetPosition(Fish_Tail_pos+distance_travel);
+
+        // Turn On RUN_TO_POSITION
+        config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        config.FishTail.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // reset the timeout time and start motion.
+        runtime.reset();
+        config.LeftWheel.setPower(config.LeftPower);
+        config.RightWheel.setPower(config.RightPower);
+        config.FishTail.setPower(config.FishTailPower);
+
+        while (opModeIsActive() && (runtime.seconds() < timeoutS) && (config.LeftWheel.isBusy() && config.RightWheel.isBusy() && config.FishTail.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
+
+            telemetry.update();
+        }
+
+        brake();
+    }
 }
+
