@@ -25,11 +25,6 @@ public class Probox_Config
 
     public HardwareMap mapping; // the mapping object for the devices
 
-    public final double INCREMENT = 0.01;
-    public final double MAX_POS_Clamp =  1.0, MAX_POS_Move = 1.0;
-    public final double MIN_POS_Clamp =  0.0, MIN_POS_Move = 0.0;
-
-    public double  Position_Clamp = 1, Position_Move = 0.05, Move_Servo_Pos = 0.05;
     public double ForwardPower = 0, BackwardPower = 0, FishTailPower = 0, LeftPower = 0, RightPower = 0;
 
     public int lift_min_position = 0;

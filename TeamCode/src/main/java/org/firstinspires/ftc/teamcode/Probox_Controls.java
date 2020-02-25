@@ -181,22 +181,23 @@ public class Probox_Controls extends LinearOpMode
     {
         if(gamepad2.a)
         {
-            config.Position_Clamp = 1;
+            config.Clamp_Servo.setPosition(1);
+            config.Clamp_Servo_2.setPosition(0);
         }
 
         else if(gamepad2.b)
         {
-            config.Position_Clamp = 0;
+            config.Clamp_Servo.setPosition(0);
+            config.Clamp_Servo_2.setPosition(1);
         }
 
         else if(gamepad2.x)
         {
-            config.Position_Clamp = 0.2;
+            config.Clamp_Servo.setPosition(0.2);
+            config.Clamp_Servo_2.setPosition(0.8);
         }
 
-        config.Clamp_Servo.setPosition(config.Position_Clamp);
-        config.Clamp_Servo_2.setPosition(-config.Position_Clamp);
-        telemetry.addData("Clamp","position: %.2f",config.Clamp_Servo.getPosition());
+        telemetry.addData("Clamp","Clamp 1 position: %.2f\nClamp 2 position: %.2f",config.Clamp_Servo.getPosition(), config.Clamp_Servo_2.getPosition());
     }
 
     private void foundation_gripper_control()
@@ -204,23 +205,16 @@ public class Probox_Controls extends LinearOpMode
         // slowly lowers or lift the grippers when the button is pressed
         if(gamepad2.left_bumper)
         {
-            if(config.Position_Move >= config.MIN_POS_Move)
-            {
-                config.Position_Move -= config.INCREMENT;
-            }
+            config.Move_Servo_1.setPosition(0);
+            config.Move_Servo_2.setPosition(1);
         }
 
         else if(gamepad2.right_bumper)
         {
-            if(config.Position_Move <= config.MAX_POS_Move)
-            {
-                config.Position_Move += config.INCREMENT;
-            }
-
+            config.Move_Servo_1.setPosition(1);
+            config.Move_Servo_2.setPosition(0);
         }
-        config.Move_Servo_Pos =  config.MAX_POS_Move - config.Position_Move;
-        config.Move_Servo_1.setPosition(config.Position_Move);
-        config.Move_Servo_2.setPosition(config.Move_Servo_Pos);
+
         telemetry.addData("Grippers"," grip_1: %.2f | grip_2: %.2f",config.Move_Servo_1.getPosition(), config.Move_Servo_2.getPosition());
 
     }
