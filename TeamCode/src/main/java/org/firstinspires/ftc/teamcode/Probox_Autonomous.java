@@ -275,12 +275,6 @@ public class Probox_Autonomous extends LinearOpMode {
         config.FishTail.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void drop_block()
-    {
-        config.Clamp_Servo.setPosition(1);
-        config.Clamp_Servo_2.setPosition(0);
-    }
-
     public void turn(double speed, double distance, double timeoutS)
     {
         nuetral();
@@ -328,15 +322,21 @@ public class Probox_Autonomous extends LinearOpMode {
 
     public void auto_comp()
     {
+        grip_block(1);
+        sleep(100);
+        move_lift(Speed,3,10);
+        sleep(10);
         lateral_b(60, 10);
         sleep(10);
         move_a(Speed, 120, 10);
         sleep(10);
         lateral_b(60,10);
         sleep(10);
-        drop_block();// start of dummy code
+        grip_block(0);// start of dummy code
         sleep(10);
         move_a(Speed,-10,10);
+        sleep(10);
+        move_lift(Speed,-2,10);
         sleep(10);
         turn(0.5, 30, 10);
         sleep(10);
@@ -353,5 +353,48 @@ public class Probox_Autonomous extends LinearOpMode {
         move_b(Speed, -105, 10);//end of dummy code
     }
 
+    public void grip_block(double position)
+    {
+        config.Clamp_Servo.setPosition(position);
+        config.Clamp_Servo_2.setPosition(1-position);
+    }
+
+    public void move_lift(double speed, double distance, double timeoutS)
+    {
+        // Ensure that the opmode is still active
+        if (opModeIsActive())
+        {
+
+            config.ExtendMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+            // Determine new target position, and pass to motor controller
+            int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
+            int Extend_Motor_pos = config.ExtendMotor.getCurrentPosition();
+
+            config.ExtendMotor.setTargetPosition(Extend_Motor_pos+distance_travel);
+
+            // Turn On RUN_TO_POSITION
+            config.ExtendMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            config.ExtendMotor.setPower(speed);
+
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && config.ExtendMotor.isBusy())
+            {
+
+                // Display it for the driver.
+                telemetry.addData("","Lift Position:%d", config.ExtendMotor.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+            config.ExtendMotor.setPower(0);
+
+            config.ExtendMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            config.ExtendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
 }
 
