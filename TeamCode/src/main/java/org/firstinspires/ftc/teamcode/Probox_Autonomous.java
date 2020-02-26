@@ -303,7 +303,6 @@ public class Probox_Autonomous extends LinearOpMode {
         config.FishTail.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-
     public void drop_block()
     {
 
