@@ -25,11 +25,6 @@ public class Probox_Config
 
     public HardwareMap mapping; // the mapping object for the devices
 
-    public final double INCREMENT = 0.01;
-    public final double MAX_POS_Clamp =  1.0, MAX_POS_Move = 1.0;
-    public final double MIN_POS_Clamp =  0.0, MIN_POS_Move = 0.0;
-
-    public double  Position_Clamp = 1, Position_Move = 0.05, Move_Servo_Pos = 0.05;
     public double ForwardPower = 0, BackwardPower = 0, FishTailPower = 0, LeftPower = 0, RightPower = 0;
 
     public int lift_min_position = 0;
@@ -84,9 +79,9 @@ public class Probox_Config
 
         // set the maximum and minimum values for the lift system motors
         lift_min_position = LiftMotor.getCurrentPosition();
-        extend_min_position = ExtendMotor.getCurrentPosition()+100;
+        extend_min_position = 100;
         lift_mid_position = (int) ((LiftMotor.getCurrentPosition() + 5100)*0.75);
-        extend_max_position = ExtendMotor.getCurrentPosition()+3500;
+        extend_max_position = 3500;
         greenColorStop = colorSensor.green()+150;
         blueColorStop = colorSensor.blue()+100;
 

@@ -41,8 +41,9 @@ import java.util.Locale;
 @TeleOp(name="Probox: Controls", group="FTC 2020")
 public class Probox_Controls extends LinearOpMode
 {
-    // robot configuration object used to store all the sensors configuration
     private Probox_Config config = new Probox_Config();
+
+    boolean change_side = false;
 
     @Override
     public void runOpMode()
@@ -71,69 +72,138 @@ public class Probox_Controls extends LinearOpMode
             telemetry.update();
         }
     }
-    // controls the robot chassis movement
+
     public void movement_Controls()
     {
-        // get values from the controller
-        config.BackwardPower  = Range.clip(gamepad1.right_trigger*2,-1.0,1.0);
-        config.ForwardPower = Range.clip(-gamepad1.left_trigger*2,-1.0,1.0);
-        config.FishTailPower = Range.clip(-gamepad1.right_stick_x*1.7,-1.0,1.0);
+        if(gamepad1.a)
+        {
+            change_side = false;
+        }
 
-        //Lateral Movement to the left
-        if(gamepad1.dpad_left)
+        else if(gamepad1.b)
         {
-            config.LeftPower = 0.33;
-            config.RightPower = -0.4;
-            config.FishTailPower = -0.67;
+            change_side = true;
         }
-        //Lateral movement to the right
-        else if(gamepad1.dpad_right)
+
+        if(change_side == false)
         {
-            config.LeftPower = -0.33;
-            config.RightPower = 0.4;
-            config.FishTailPower = 0.67;
-        }
-        //360 degree turn to the left
-        else if(gamepad1.left_stick_x > 0)
-        {
-            config.LeftPower = -1*gamepad1.left_stick_x;
-            config.RightPower = 1*gamepad1.left_stick_x;
-            config.FishTailPower = -1*gamepad1.left_stick_x;
-        }
-        //360 degree turn to the right
-        else if(gamepad1.left_stick_x < 0)
-        {
-            config.LeftPower = 1*-gamepad1.left_stick_x;
-            config.RightPower = -1*-gamepad1.left_stick_x;
-            config.FishTailPower = 1*-gamepad1.left_stick_x;
-        }
-        else
-        {
-            if(config.BackwardPower > 0)
+            config.BackwardPower  = Range.clip(gamepad1.right_trigger*2,-1.0,1.0);
+            config.ForwardPower = Range.clip(-gamepad1.left_trigger*2,-1.0,1.0);
+            config.FishTailPower = Range.clip(gamepad1.right_stick_x*1.7,-1.0,1.0);
+
+            if(gamepad1.dpad_left)
             {
-                config.LeftPower = config.BackwardPower;
-                config.RightPower = config.BackwardPower;
+                config.LeftPower = 0.33;
+                config.RightPower = -0.4;
+                config.FishTailPower = -0.67;
             }
-            else if(config.ForwardPower < 0)
+            //Lateral movement to the right
+            else if(gamepad1.dpad_right)
             {
-                config.LeftPower = config.ForwardPower;
-                config.RightPower = config.ForwardPower;
+                config.LeftPower = -0.33;
+                config.RightPower = 0.4;
+                config.FishTailPower = 0.67;
+            }
+            //360 degree turn to the left
+            else if(gamepad1.left_stick_x > 0)
+            {
+                config.LeftPower = -1*gamepad1.left_stick_x;
+                config.RightPower = 1*gamepad1.left_stick_x;
+                config.FishTailPower = -1*gamepad1.left_stick_x;
+            }
+            //360 degree turn to the right
+            else if(gamepad1.left_stick_x < 0)
+            {
+                config.LeftPower = 1*-gamepad1.left_stick_x;
+                config.RightPower = -1*-gamepad1.left_stick_x;
+                config.FishTailPower = 1*-gamepad1.left_stick_x;
             }
             else
             {
-                config.LeftPower = 0;
-                config.RightPower = 0;
+                if(config.BackwardPower > 0)
+                {
+                    config.LeftPower = 1*-config.BackwardPower;
+                    config.RightPower = 1*-config.BackwardPower;
+                }
+                else if(config.ForwardPower < 0)
+                {
+                    config.LeftPower = 1*-config.ForwardPower;
+                    config.RightPower = 1*-config.ForwardPower;
+                }
+                else
+                {
+                    config.LeftPower = 0;
+                    config.RightPower = 0;
+                }
             }
+
+            config.LeftWheel.setPower(config.LeftPower);
+            config.RightWheel.setPower(config.RightPower);
+            config.FishTail.setPower(config.FishTailPower);
+            telemetry.addData("Wheels", "right_Wheel: %.2f | left_Wheel: %.2f | fishTail: %.2f",
+                    config.RightPower, config.LeftPower, config.FishTailPower);
         }
 
-        config.LeftWheel.setPower(config.LeftPower);
-        config.RightWheel.setPower(config.RightPower);
-        config.FishTail.setPower(config.FishTailPower);
-        telemetry.addData("Wheels", "right_Wheel: %.2f | left_Wheel: %.2f | fishTail: %.2f",
-                config.RightPower, config.LeftPower, config.FishTailPower);
+        else
+        {
+            config.BackwardPower  = Range.clip(gamepad1.right_trigger*2,-1.0,1.0);
+            config.ForwardPower = Range.clip(-gamepad1.left_trigger*2,-1.0,1.0);
+            config.FishTailPower = Range.clip(gamepad1.right_stick_x*1.7,-1.0,1.0);
+
+            if(gamepad1.dpad_left)
+            {
+                config.LeftPower = 0.33;
+                config.RightPower = -0.4;
+                config.FishTailPower = -0.67;
+            }
+            //Lateral movement to the right
+            else if(gamepad1.dpad_right)
+            {
+                config.LeftPower = -0.33;
+                config.RightPower = 0.4;
+                config.FishTailPower = 0.67;
+            }
+            //360 degree turn to the left
+            else if(gamepad1.left_stick_x > 0)
+            {
+                config.LeftPower = -1*gamepad1.left_stick_x;
+                config.RightPower = 1*gamepad1.left_stick_x;
+                config.FishTailPower = -1*gamepad1.left_stick_x;
+            }
+            //360 degree turn to the right
+            else if(gamepad1.left_stick_x < 0)
+            {
+                config.LeftPower = 1*-gamepad1.left_stick_x;
+                config.RightPower = -1*-gamepad1.left_stick_x;
+                config.FishTailPower = 1*-gamepad1.left_stick_x;
+            }
+            else
+            {
+                if(config.BackwardPower > 0)
+                {
+                    config.LeftPower = config.BackwardPower;
+                    config.RightPower = config.BackwardPower;
+                }
+                else if(config.ForwardPower < 0)
+                {
+                    config.LeftPower = config.ForwardPower;
+                    config.RightPower = config.ForwardPower;
+                }
+                else
+                {
+                    config.LeftPower = 0;
+                    config.RightPower = 0;
+                }
+            }
+
+            config.LeftWheel.setPower(config.FishTailPower);
+            config.RightWheel.setPower(config.LeftPower);
+            config.FishTail.setPower(config.RightPower);
+            telemetry.addData("Wheels", "right_Wheel: %.2f | left_Wheel: %.2f | fishTail: %.2f",
+                    config.RightPower, config.LeftPower, config.FishTailPower);
+        }
     }
 
-    //controls the lifting mechanism
     public void lift_Contols()
     {
         // lift integration
@@ -148,7 +218,7 @@ public class Probox_Controls extends LinearOpMode
                 config.ExtendMotor.setPower(0.5);
             }
         }
-        else if(gamepad2.dpad_right)
+        else if(gamepad2.x)
         {
             if(config.ExtendMotor.getCurrentPosition() > config.extend_min_position)
             {
@@ -179,50 +249,33 @@ public class Probox_Controls extends LinearOpMode
 
     public void clamp_Control()
     {
-        if(gamepad2.a)
+        if(gamepad2.b)
         {
-            config.Position_Clamp = 1;
+            config.Clamp_Servo.setPosition(1);
+            config.Clamp_Servo_2.setPosition(0);
         }
 
-        else if(gamepad2.b)
+        else if(gamepad2.a)
         {
-            config.Position_Clamp = 0;
+            config.Clamp_Servo.setPosition(0);
+            config.Clamp_Servo_2.setPosition(1);
         }
-
-        else if(gamepad2.x)
-        {
-            config.Position_Clamp = 0.2;
-        }
-
-        config.Clamp_Servo.setPosition(config.Position_Clamp);
-        config.Clamp_Servo_2.setPosition(-config.Position_Clamp);
-        telemetry.addData("Clamp","position: %.2f",config.Clamp_Servo.getPosition());
+        telemetry.addData("Clamp","Clamp 1 position: %.2f\nClamp 2 position: %.2f",config.Clamp_Servo.getPosition(), config.Clamp_Servo_2.getPosition());
     }
 
     private void foundation_gripper_control()
     {
-        // slowly lowers or lift the grippers when the button is pressed
         if(gamepad2.left_bumper)
         {
-            if(config.Position_Move >= config.MIN_POS_Move)
-            {
-                config.Position_Move -= config.INCREMENT;
-            }
+            config.Move_Servo_1.setPosition(0);
+            config.Move_Servo_2.setPosition(1);
         }
 
         else if(gamepad2.right_bumper)
         {
-            if(config.Position_Move <= config.MAX_POS_Move)
-            {
-                config.Position_Move += config.INCREMENT;
-            }
-
+            config.Move_Servo_1.setPosition(1);
+            config.Move_Servo_2.setPosition(0);
         }
-        config.Move_Servo_Pos =  config.MAX_POS_Move - config.Position_Move;
-        config.Move_Servo_1.setPosition(config.Position_Move);
-        config.Move_Servo_2.setPosition(config.Move_Servo_Pos);
         telemetry.addData("Grippers"," grip_1: %.2f | grip_2: %.2f",config.Move_Servo_1.getPosition(), config.Move_Servo_2.getPosition());
-
     }
-
 }
