@@ -35,8 +35,6 @@ public class Probox_Config
     public int blueColorStop = 200;
     public double min_colo_distance = 6;
 
-
-
     public void HardwareMapAll(HardwareMap mapping)
     {
         this.mapping = mapping;

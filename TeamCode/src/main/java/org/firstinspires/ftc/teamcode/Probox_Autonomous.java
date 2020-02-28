@@ -228,29 +228,25 @@ public class Probox_Autonomous extends LinearOpMode {
 
             runtime.reset();
             config.LeftWheel.setPower(config.LeftPower);
-            config.RightWheel.setPower(config.RightPower);
+            config.RightWheel.setPower(1*-config.RightPower);
             config.FishTail.setPower(config.FishTailPower);
 
             while (opModeIsActive() && (runtime.seconds() < timeoutS)) {
                 // Display it for the driver.
 
-                if (!config.FishTail.isBusy()) {
+                if (!config.FishTail.isBusy())
+                {
                     config.LeftWheel.setPower(0);
                     config.RightWheel.setPower(0);
                     config.FishTail.setPower(0);
                     brake();
                     break;
                 }
-
                 telemetry.addData("FishTail Count:", config.FishTail.getCurrentPosition());
-
                 telemetry.update();
             }
-
             brake();
-
         }
-
     }
 
     public void nuetral()
@@ -279,9 +275,9 @@ public class Probox_Autonomous extends LinearOpMode {
     {
         nuetral();
 
-        config.LeftPower = 1*speed;
-        config.RightPower = 1*speed;
-        config.FishTailPower = 1*speed;
+        config.LeftPower = speed;
+        config.RightPower = speed;
+        config.FishTailPower = speed;
 
         int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
         int Left_wheel_pos = config.LeftWheel.getCurrentPosition();

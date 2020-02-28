@@ -71,7 +71,7 @@ public class Probox_Controls extends LinearOpMode
             telemetry.update();
         }
     }
-    // controls the robot chassis movement
+
     public void movement_Controls()
     {
         // get values from the controller
@@ -133,7 +133,6 @@ public class Probox_Controls extends LinearOpMode
                 config.RightPower, config.LeftPower, config.FishTailPower);
     }
 
-    //controls the lifting mechanism
     public void lift_Contols()
     {
         // lift integration
