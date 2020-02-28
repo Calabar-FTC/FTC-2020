@@ -94,28 +94,28 @@ public class Probox_Controls extends LinearOpMode
             if(gamepad1.dpad_left)
             {
                 config.LeftPower = 0.33;
-                config.RightPower = -0.4;
+                config.RightPower = 0.4;
                 config.FishTailPower = -0.67;
             }
             //Lateral movement to the right
             else if(gamepad1.dpad_right)
             {
                 config.LeftPower = -0.33;
-                config.RightPower = 0.4;
+                config.RightPower = -0.4;
                 config.FishTailPower = 0.67;
             }
             //360 degree turn to the left
             else if(gamepad1.left_stick_x > 0)
             {
                 config.LeftPower = -1*gamepad1.left_stick_x;
-                config.RightPower = 1*gamepad1.left_stick_x;
-                config.FishTailPower = -1*gamepad1.left_stick_x;
+                config.RightPower = 1*-gamepad1.left_stick_x;
+                config.FishTailPower = 1*-gamepad1.left_stick_x;
             }
             //360 degree turn to the right
             else if(gamepad1.left_stick_x < 0)
             {
                 config.LeftPower = 1*-gamepad1.left_stick_x;
-                config.RightPower = -1*-gamepad1.left_stick_x;
+                config.RightPower = -1*gamepad1.left_stick_x;
                 config.FishTailPower = 1*-gamepad1.left_stick_x;
             }
             else
@@ -123,12 +123,12 @@ public class Probox_Controls extends LinearOpMode
                 if(config.BackwardPower > 0)
                 {
                     config.LeftPower = 1*-config.BackwardPower;
-                    config.RightPower = 1*-config.BackwardPower;
+                    config.RightPower = 1*config.BackwardPower;
                 }
                 else if(config.ForwardPower < 0)
                 {
                     config.LeftPower = 1*-config.ForwardPower;
-                    config.RightPower = 1*-config.ForwardPower;
+                    config.RightPower = 1*config.ForwardPower;
                 }
                 else
                 {
@@ -153,40 +153,40 @@ public class Probox_Controls extends LinearOpMode
             if(gamepad1.dpad_left)
             {
                 config.LeftPower = 0.33;
-                config.RightPower = -0.4;
+                config.RightPower = 0.4;
                 config.FishTailPower = -0.67;
             }
             //Lateral movement to the right
             else if(gamepad1.dpad_right)
             {
                 config.LeftPower = -0.33;
-                config.RightPower = 0.4;
+                config.RightPower = -0.4;
                 config.FishTailPower = 0.67;
             }
             //360 degree turn to the left
             else if(gamepad1.left_stick_x > 0)
             {
                 config.LeftPower = -1*gamepad1.left_stick_x;
-                config.RightPower = 1*gamepad1.left_stick_x;
-                config.FishTailPower = -1*gamepad1.left_stick_x;
+                config.RightPower = 1*-gamepad1.left_stick_x;
+                config.FishTailPower = 1*-gamepad1.left_stick_x;
             }
             //360 degree turn to the right
             else if(gamepad1.left_stick_x < 0)
             {
                 config.LeftPower = 1*-gamepad1.left_stick_x;
-                config.RightPower = -1*-gamepad1.left_stick_x;
+                config.RightPower = -1*gamepad1.left_stick_x;
                 config.FishTailPower = 1*-gamepad1.left_stick_x;
             }
             else
             {
                 if(config.BackwardPower > 0)
                 {
-                    config.LeftPower = config.BackwardPower;
+                    config.LeftPower = -config.BackwardPower;
                     config.RightPower = config.BackwardPower;
                 }
                 else if(config.ForwardPower < 0)
                 {
-                    config.LeftPower = config.ForwardPower;
+                    config.LeftPower = -config.ForwardPower;
                     config.RightPower = config.ForwardPower;
                 }
                 else
@@ -206,42 +206,32 @@ public class Probox_Controls extends LinearOpMode
 
     public void lift_Contols()
     {
-        // lift integration
         if(gamepad2.y)
         {
-            if((config.LiftMotor.getCurrentPosition() < config.lift_mid_position) || (config.colorSensor.green() < config.greenColorStop && config.colorSensor.blue() < config.blueColorStop&& config.distanceSensor.getDistance(DistanceUnit.CM) > config.min_colo_distance))
-            {
                 config.LiftMotor.setPower(0.5);
-            }
-            else if(config.ExtendMotor.getCurrentPosition() < config.extend_max_position)
-            {
-                config.ExtendMotor.setPower(0.5);
-            }
         }
+
         else if(gamepad2.x)
         {
-            if(config.ExtendMotor.getCurrentPosition() > config.extend_min_position)
-            {
-                config.ExtendMotor.setPower(-0.5);
-            }
-            else if(config.LiftMotor.getCurrentPosition() > config.lift_min_position)
-            {
-            config.LiftMotor.setPower(-0.5);
-            }
+                config.LiftMotor.setPower(-0.5);
         }
+
         else if(gamepad2.dpad_down)
         {
-            config.ExtendMotor.setPower(-0.5);
+                config.ExtendMotor.setPower(0.5);
         }
+
         else if(gamepad2.dpad_up)
         {
-            config.ExtendMotor.setPower(0.5);
+                config.ExtendMotor.setPower(-0.5);
         }
+
         else
         {
             config.LiftMotor.setPower(0);
             config.ExtendMotor.setPower(0);
         }
+
         telemetry.addData("Blue ", config.colorSensor.blue());
         telemetry.addData("color and distance","color green: %d | distance: %s",config.colorSensor.green(),String.format(Locale.US, "%.02f", config.distanceSensor.getDistance(DistanceUnit.CM)));
         telemetry.addData("Lift Mechanism","lift1: %d | lift2: %d", config.LiftMotor.getCurrentPosition(), config.ExtendMotor.getCurrentPosition());

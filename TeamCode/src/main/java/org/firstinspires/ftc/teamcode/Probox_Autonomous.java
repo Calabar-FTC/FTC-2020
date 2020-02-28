@@ -39,7 +39,6 @@ import java.lang.annotation.Target;
 @Autonomous(name="Probox: Autonomous", group="Auto")
 public class Probox_Autonomous extends LinearOpMode
 {
-
     private Probox_Config config = new Probox_Config();
     private ElapsedTime     runtime = new ElapsedTime();
 
@@ -61,7 +60,8 @@ public class Probox_Autonomous extends LinearOpMode
 
         waitForStart();
 
-        auto_comp();
+        //auto_comp();
+        simple();
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -78,7 +78,7 @@ public class Probox_Autonomous extends LinearOpMode
             int Right_wheel_pos = config.RightWheel.getCurrentPosition();
 
             config.LeftWheel.setTargetPosition(Left_wheel_pos-distance_travel);
-            config.RightWheel.setTargetPosition(Right_wheel_pos-distance_travel);
+            config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
 
             config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -89,6 +89,10 @@ public class Probox_Autonomous extends LinearOpMode
 
             while (opModeIsActive() && (runtime.seconds() < timeoutS) && (config.LeftWheel.isBusy() && config.RightWheel.isBusy()))
             {
+                if(config.LeftWheel.getCurrentPosition() >= Left_wheel_pos-distance_travel ||  config.RightWheel.getCurrentPosition() >= Right_wheel_pos+distance_travel ){
+                    brake();
+                    break;
+                }
                 telemetry.addData("","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
                 telemetry.update();
             }
@@ -165,7 +169,7 @@ public class Probox_Autonomous extends LinearOpMode
             int Fish_Tail_pos = config.FishTail.getCurrentPosition();
 
             config.LeftPower = -0.33;
-            config.RightPower = 0.4;
+            config.RightPower = -0.4;
             config.FishTailPower = 0.67;
 
             config.FishTail.setTargetPosition(Fish_Tail_pos + distance_travel);
@@ -250,40 +254,30 @@ public class Probox_Autonomous extends LinearOpMode
         brake();
     }
 
-    public void grip_foundation(double position)
-    {
-        config.Move_Servo_1.setPosition(position);
-        config.Move_Servo_2.setPosition(1-position);
-        sleep(2000);
-    }
-
     public void auto_comp()
     {
-        move_lift(0.5,5, 10);
-        grip_foundation(0);
         grip_block(1);
        move_a(Speed, 89, 10);
        grip_block(0);
        move_a(Speed, -30, 10);
        turn(0.5, 30, 10);
        move_a(Speed, 146, 10);
-       move_lift(0.5, 5, 10);
-       lateral_b(0.5, 10);
+       move_lift(0.5, -0.2, 10);
+       lateral_b(15, 10);
        move_a(0.5, 15, 10);
        grip_block(1);
-       move_a(0.5, -15, 10);
-       turn(0.5, 30, 10);
-       move_a(0.5, 15, 10);
-       grip_foundation(1);
+       move_lift(0.5, 0.2, 10);
+       turn(Speed, 15, 10);
        move_a(Speed, 60, 10);
-       move_c(Speed, -60, 10);
+       move_lift(0.5, -0.2, 10);
+       move_c(Speed, 60, 10);
     }
 
     public void grip_block(double position)
     {
         config.Clamp_Servo.setPosition(position);
         config.Clamp_Servo_2.setPosition(1-position);
-        sleep(2000);
+        sleep(1000);
     }
 
     public void move_lift(double speed, double distance, double timeoutS)
@@ -315,5 +309,11 @@ public class Probox_Autonomous extends LinearOpMode
 
             config.ExtendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+    }
+
+    public void simple()
+    {
+        lateral_b(20, 10);
+        move_a(Speed, 80, 10);
     }
 }
