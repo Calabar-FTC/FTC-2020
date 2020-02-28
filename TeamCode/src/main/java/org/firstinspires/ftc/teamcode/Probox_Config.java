@@ -77,9 +77,9 @@ public class Probox_Config
 
         // set the maximum and minimum values for the lift system motors
         lift_min_position = LiftMotor.getCurrentPosition();
-        extend_min_position = ExtendMotor.getCurrentPosition()+100;
+        extend_min_position = ExtendMotor.getCurrentPosition();
         lift_mid_position = (int) ((LiftMotor.getCurrentPosition() + 5100)*0.75);
-        extend_max_position = ExtendMotor.getCurrentPosition()+3500;
+        extend_max_position = -204;
         greenColorStop = colorSensor.green()+150;
         blueColorStop = colorSensor.blue()+100;
 
