@@ -182,7 +182,7 @@ public class Probox_Autonomousblue extends LinearOpMode
             int Fish_Tail_pos = config.FishTail.getCurrentPosition();
 
             config.LeftPower = -0.33;
-            config.RightPower = -0.4;
+            config.RightPower = 0.4;
             config.FishTailPower = 0.67;
 
             config.FishTail.setTargetPosition(Fish_Tail_pos + distance_travel);
@@ -191,8 +191,9 @@ public class Probox_Autonomousblue extends LinearOpMode
 
             runtime.reset();
             config.LeftWheel.setPower(config.LeftPower);
-            config.RightWheel.setPower(config.RightPower);
+            config.RightWheel.setPower(1*-config.RightPower);
             config.FishTail.setPower(config.FishTailPower);
+
 
             while (opModeIsActive() && (runtime.seconds() < timeoutS))
             {
