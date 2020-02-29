@@ -84,7 +84,7 @@ public class Probox_Config
         extend_max_position = -204;
         greenColorStop = colorSensor.green()+150;
         blueColorStop = colorSensor.blue()+100;
-
-
+        Clamp_Servo_2.setPosition(0);
+        Clamp_Servo.setPosition(1);
     }
 }

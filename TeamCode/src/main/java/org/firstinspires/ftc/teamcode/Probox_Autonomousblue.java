@@ -36,8 +36,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.lang.annotation.Target;
 
-@Autonomous(name="Probox: Autonomous", group="Auto")
-public class Probox_Autonomous extends LinearOpMode
+@Autonomous(name="Probox: Autonomous Blue 2", group="Auto")
+public class Probox_Autonomousblue extends LinearOpMode
 {
     private Probox_Config config = new Probox_Config();
     private ElapsedTime     runtime = new ElapsedTime();
@@ -87,13 +87,26 @@ public class Probox_Autonomous extends LinearOpMode
             config.LeftWheel.setPower(speed);
             config.RightWheel.setPower(speed);
 
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (config.LeftWheel.isBusy() && config.RightWheel.isBusy()))
+            while (opModeIsActive() && (runtime.seconds() < timeoutS))
             {
-                if(config.LeftWheel.getCurrentPosition() >= Left_wheel_pos-distance_travel ||  config.RightWheel.getCurrentPosition() >= Right_wheel_pos+distance_travel ){
-                    brake();
-                    break;
+                if(distance > 0)
+                {
+                    if(config.LeftWheel.getCurrentPosition() <= Left_wheel_pos-distance_travel)
+                    {
+                        brake();
+                        break;
+                    }
                 }
-                telemetry.addData("","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
+
+                else if(distance < 0)
+                {
+                    if(config.LeftWheel.getCurrentPosition() >  Left_wheel_pos-distance_travel)
+                    {
+                        brake();
+                        break;
+                    }
+                }
+                telemetry.addData("Wheel Position","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
                 telemetry.update();
             }
             brake();
@@ -207,17 +220,18 @@ public class Probox_Autonomous extends LinearOpMode
 
     public void brake()
     {
-        config.LeftWheel.setPower(0);
         config.RightWheel.setPower(0);
         config.FishTail.setPower(0);
+        config.LeftWheel.setPower(0);
 
-        config.LeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         config.RightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         config.FishTail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        config.LeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        config.LeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         config.RightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         config.FishTail.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        config.LeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 
     public void turn(double speed, double distance, double timeoutS)
@@ -234,7 +248,7 @@ public class Probox_Autonomous extends LinearOpMode
         int Fish_Tail_pos = config.RightWheel.getCurrentPosition();
 
         config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
-        config.RightWheel.setTargetPosition(Right_wheel_pos-distance_travel);
+        config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
         config.FishTail.setTargetPosition(Fish_Tail_pos+distance_travel);
 
         config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -248,6 +262,12 @@ public class Probox_Autonomous extends LinearOpMode
 
         while (opModeIsActive() && (runtime.seconds() < timeoutS) && (config.LeftWheel.isBusy() && config.RightWheel.isBusy() && config.FishTail.isBusy()))
         {
+            if(config.LeftWheel.getCurrentPosition() <= Left_wheel_pos-distance_travel)
+            {
+                brake();
+                break;
+            }
+
             telemetry.addData("","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
             telemetry.update();
         }
@@ -284,36 +304,31 @@ public class Probox_Autonomous extends LinearOpMode
     {
         if (opModeIsActive())
         {
-
-            config.ExtendMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            config.LiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
             int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
-            int Extend_Motor_pos = config.ExtendMotor.getCurrentPosition();
+            int Lift_Motor_Pos = config.LiftMotor.getCurrentPosition();
 
-            config.ExtendMotor.setTargetPosition(Extend_Motor_pos+distance_travel);
+            config.LiftMotor.setTargetPosition(Lift_Motor_Pos+distance_travel);
 
-            config.ExtendMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            config.LiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             runtime.reset();
-            config.ExtendMotor.setPower(speed);
+            config.LiftMotor.setPower(speed);
 
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && config.ExtendMotor.isBusy())
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && config.LiftMotor.isBusy())
             {
-                telemetry.addData("","Lift Position:%d", config.ExtendMotor.getCurrentPosition());
+                telemetry.addData("","Lift Position:%d", config.LiftMotor.getCurrentPosition());
                 telemetry.update();
             }
-
-            config.ExtendMotor.setPower(0);
-
-            config.ExtendMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-            config.ExtendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            config.LiftMotor.setPower(0);
+            config.LiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            config.LiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
     public void simple()
     {
-        lateral_b(20, 10);
         move_a(Speed, 80, 10);
     }
 }

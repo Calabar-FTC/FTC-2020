@@ -45,6 +45,8 @@ public class Probox_Controls extends LinearOpMode
 
     boolean change_side = false;
 
+    double change_speed = 1;
+
     @Override
     public void runOpMode()
     {
@@ -85,16 +87,26 @@ public class Probox_Controls extends LinearOpMode
             change_side = true;
         }
 
+        if(gamepad1.left_bumper)
+        {
+            change_speed = 0.5;
+        }
+
+        if(gamepad1.right_bumper)
+        {
+            change_speed = 1;
+        }
+
         if(change_side == false)
         {
-            config.BackwardPower  = Range.clip(gamepad1.right_trigger*2,-1.0,1.0);
-            config.ForwardPower = Range.clip(-gamepad1.left_trigger*2,-1.0,1.0);
+            config.BackwardPower  = Range.clip(gamepad1.left_trigger*2,-1.0,1.0);
+            config.ForwardPower = Range.clip(gamepad1.right_trigger*2,-1.0,1.0);
             config.FishTailPower = Range.clip(gamepad1.right_stick_x*1.7,-1.0,1.0);
 
             if(gamepad1.dpad_left)
             {
-                config.LeftPower = 0.33;
-                config.RightPower = 0.4;
+                config.LeftPower = 0.4;
+                config.RightPower = 0.33;
                 config.FishTailPower = -0.67;
             }
             //Lateral movement to the right
@@ -107,28 +119,28 @@ public class Probox_Controls extends LinearOpMode
             //360 degree turn to the left
             else if(gamepad1.left_stick_x > 0)
             {
-                config.LeftPower = -1*gamepad1.left_stick_x;
-                config.RightPower = 1*-gamepad1.left_stick_x;
-                config.FishTailPower = 1*-gamepad1.left_stick_x;
+                config.LeftPower = -gamepad1.left_stick_x*change_speed;
+                config.RightPower = -gamepad1.left_stick_x*change_speed;
+                config.FishTailPower = -gamepad1.left_stick_x*change_speed;
             }
             //360 degree turn to the right
             else if(gamepad1.left_stick_x < 0)
             {
-                config.LeftPower = 1*-gamepad1.left_stick_x;
-                config.RightPower = -1*gamepad1.left_stick_x;
-                config.FishTailPower = 1*-gamepad1.left_stick_x;
+                config.LeftPower = -gamepad1.left_stick_x*change_speed;
+                config.RightPower = -gamepad1.left_stick_x*change_speed;
+                config.FishTailPower = -gamepad1.left_stick_x*change_speed;
             }
             else
             {
                 if(config.BackwardPower > 0)
                 {
-                    config.LeftPower = 1*-config.BackwardPower;
-                    config.RightPower = 1*config.BackwardPower;
+                    config.LeftPower =config.BackwardPower*change_speed;
+                    config.RightPower =-config.BackwardPower*change_speed;
                 }
-                else if(config.ForwardPower < 0)
+                else if(config.ForwardPower > 0)
                 {
-                    config.LeftPower = 1*-config.ForwardPower;
-                    config.RightPower = 1*config.ForwardPower;
+                    config.LeftPower = -config.ForwardPower*change_speed;
+                    config.RightPower = config.ForwardPower*change_speed;
                 }
                 else
                 {
@@ -152,8 +164,8 @@ public class Probox_Controls extends LinearOpMode
 
             if(gamepad1.dpad_left)
             {
-                config.LeftPower = 0.33;
-                config.RightPower = 0.4;
+                config.LeftPower = 0.4;
+                config.RightPower = 0.33;
                 config.FishTailPower = -0.67;
             }
             //Lateral movement to the right
@@ -166,28 +178,28 @@ public class Probox_Controls extends LinearOpMode
             //360 degree turn to the left
             else if(gamepad1.left_stick_x > 0)
             {
-                config.LeftPower = -1*gamepad1.left_stick_x;
-                config.RightPower = 1*-gamepad1.left_stick_x;
-                config.FishTailPower = 1*-gamepad1.left_stick_x;
+                config.LeftPower = -gamepad1.left_stick_x*change_speed;
+                config.RightPower = -gamepad1.left_stick_x*change_speed;
+                config.FishTailPower = -gamepad1.left_stick_x*change_speed;
             }
             //360 degree turn to the right
             else if(gamepad1.left_stick_x < 0)
             {
-                config.LeftPower = 1*-gamepad1.left_stick_x;
-                config.RightPower = -1*gamepad1.left_stick_x;
-                config.FishTailPower = 1*-gamepad1.left_stick_x;
+                config.LeftPower = -gamepad1.left_stick_x*change_speed;
+                config.RightPower = -gamepad1.left_stick_x*change_speed;
+                config.FishTailPower = -gamepad1.left_stick_x*change_speed;
             }
             else
             {
                 if(config.BackwardPower > 0)
                 {
-                    config.LeftPower = -config.BackwardPower;
-                    config.RightPower = config.BackwardPower;
+                    config.LeftPower = -config.BackwardPower*change_speed;
+                    config.RightPower = config.BackwardPower*change_speed;
                 }
                 else if(config.ForwardPower < 0)
                 {
-                    config.LeftPower = -config.ForwardPower;
-                    config.RightPower = config.ForwardPower;
+                    config.LeftPower = -config.ForwardPower*change_speed;
+                    config.RightPower = config.ForwardPower*change_speed;
                 }
                 else
                 {
