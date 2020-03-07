@@ -34,9 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.lang.annotation.Target;
-
-@Autonomous(name="Probox: Autonomous Blue 2", group="Auto")
+@Autonomous(name="Probox: Autonomous Blue", group="Auto")
 public class Probox_Autonomousblue extends LinearOpMode
 {
     private Probox_Config config = new Probox_Config();
@@ -58,16 +56,81 @@ public class Probox_Autonomousblue extends LinearOpMode
         telemetry.addData("Motors",  "Left Motor: %d\nRight Motor: %d",  config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
         telemetry.update();
 
+
         waitForStart();
 
-        //auto_comp();
-        simple();
+//        drop_under_bridge();
+//        drop_on_foundation();
+//        all_out();
+//        simple();
+
+        move_a(Speed, 60, 10);
+        turn(Speed, 32, 10);
+        move_a(Speed,40, 10);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
 
-    public void move_a(double speed, double distance, double timeoutS)
+    public void simple()
+    {
+        move_a(Speed, 80, 10);
+    }
+
+    public void all_out()
+    {
+        move_a(Speed, 60, 10);
+        grip_block(0);
+        move_a_back(Speed, 35, 10);
+        turn(Speed, 29, 10);
+        move_a(Speed, 190, 10);
+
+        anti_turn(Speed, 29, 10);
+        move_lift(Speed, 30, 10);
+        move_a(Speed, 25, 10);
+        grip_block(1);
+        move_lift(Speed, -30, 10);
+        move_a_back(Speed, 60, 10);
+        turn(Speed, 29, 10);
+        move_a(Speed, 20, 10);
+        move_lift(Speed, 30, 10);
+        move_a_back(Speed, 45, 10);
+        move_lift(Speed, -30, 10);
+        move_a_back(Speed, 45, 10);
+    }
+
+    public void drop_on_foundation()
+    {
+        move_a(Speed, 60, 10);
+        grip_block(0);
+        move_a_back(Speed, 35, 10);
+        turn(Speed, 29, 10);
+        move_a(Speed, 190, 10);
+
+        anti_turn(Speed, 29, 10);
+        move_lift(Speed, 30, 10);
+        move_a(Speed, 25, 10);
+        grip_block(1);
+
+        //start returnikn gto bridge
+        move_a_back(Speed, 25, 10);
+        move_lift(Speed, -30, 10);
+        anti_turn(Speed, 29, 10);
+        move_a(Speed, 90, 10);
+    }
+
+    public void drop_under_bridge()
+    {
+        move_a(Speed, 60, 10);
+        grip_block(0);
+        move_a_back(Speed, 35, 10);
+        turn(Speed, 29, 10);
+        move_a(Speed, 160, 10);
+        grip_block(1);
+        move_a_back(Speed, 70, 10);
+    }
+
+    public void move_a_back(double speed, double distance, double timeoutS)
     {
         if (opModeIsActive())
         {
@@ -77,8 +140,8 @@ public class Probox_Autonomousblue extends LinearOpMode
             int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
             int Right_wheel_pos = config.RightWheel.getCurrentPosition();
 
-            config.LeftWheel.setTargetPosition(Left_wheel_pos-distance_travel);
-            config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
+            config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
+            config.RightWheel.setTargetPosition(Right_wheel_pos-distance_travel);
 
             config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -89,85 +152,14 @@ public class Probox_Autonomousblue extends LinearOpMode
 
             while (opModeIsActive() && (runtime.seconds() < timeoutS))
             {
-                if(distance > 0)
+                if(config.LeftWheel.getCurrentPosition() > Left_wheel_pos+distance_travel)
                 {
-                    if(config.LeftWheel.getCurrentPosition() <= Left_wheel_pos-distance_travel)
-                    {
-                        brake();
-                        break;
-                    }
-                }
-
-                else if(distance < 0)
-                {
-                    if(config.LeftWheel.getCurrentPosition() >  Left_wheel_pos-distance_travel)
-                    {
-                        brake();
-                        break;
-                    }
+                    brake();
+                    break;
                 }
                 telemetry.addData("Wheel Position","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
                 telemetry.update();
             }
-            brake();
-        }
-    }
-
-    public void move_b(double speed, double distance, double timeoutS)
-    {
-        if (opModeIsActive())
-        {
-            nuetral();
-
-            int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
-            int Fish_Tail_pos = config.FishTail.getCurrentPosition();
-            int Right_wheel_pos = config.RightWheel.getCurrentPosition();
-
-            config.FishTail.setTargetPosition(Fish_Tail_pos+distance_travel);
-            config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
-
-            config.FishTail.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            runtime.reset();
-            config.FishTail.setPower(speed);
-            config.RightWheel.setPower(speed);
-
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (config.FishTail.isBusy() && config.RightWheel.isBusy()))
-            {
-                telemetry.addData("Wheels","FishTail Position: %d\nRight Wheel Position: %d", config.FishTail.getCurrentPosition(), config.RightWheel.getCurrentPosition());
-                telemetry.update();
-            }
-          brake();
-        }
-    }
-
-    public void move_c(double speed, double distance, double timeoutS)
-    {
-        if (opModeIsActive())
-        {
-            nuetral();
-
-            int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
-            int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
-            int Fish_Tail_pos = config.FishTail.getCurrentPosition();
-
-            config.LeftWheel.setTargetPosition(Left_wheel_pos-distance_travel);
-            config.FishTail.setTargetPosition(Fish_Tail_pos+distance_travel);
-
-            config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            config.FishTail.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            runtime.reset();
-            config.LeftWheel.setPower(speed);
-            config.FishTail.setPower(speed);
-
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (config.LeftWheel.isBusy() && config.FishTail.isBusy()))
-            {
-                telemetry.addData("Wheels","Left Wheel Position:%d\nFishTail Position: %d", config.LeftWheel.getCurrentPosition(), config.FishTail.getCurrentPosition());
-                telemetry.update();
-            }
-
             brake();
         }
     }
@@ -181,9 +173,9 @@ public class Probox_Autonomousblue extends LinearOpMode
             int distance_travel = (int) (distance / distance_per_rev * Counts_Per_Rev);
             int Fish_Tail_pos = config.FishTail.getCurrentPosition();
 
-            config.LeftPower = -0.33;
-            config.RightPower = 0.4;
-            config.FishTailPower = 0.67;
+            config.LeftPower = 0.4;
+            config.RightPower = 0.33;
+            config.FishTailPower = -0.67;
 
             config.FishTail.setTargetPosition(Fish_Tail_pos + distance_travel);
 
@@ -191,9 +183,8 @@ public class Probox_Autonomousblue extends LinearOpMode
 
             runtime.reset();
             config.LeftWheel.setPower(config.LeftPower);
-            config.RightWheel.setPower(1*-config.RightPower);
+            config.RightWheel.setPower(config.RightPower);
             config.FishTail.setPower(config.FishTailPower);
-
 
             while (opModeIsActive() && (runtime.seconds() < timeoutS))
             {
@@ -217,6 +208,10 @@ public class Probox_Autonomousblue extends LinearOpMode
         config.LeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         config.RightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         config.FishTail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        config.LeftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        config.RightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        config.FishTail.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void brake()
@@ -232,73 +227,6 @@ public class Probox_Autonomousblue extends LinearOpMode
         config.RightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         config.FishTail.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         config.LeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-    }
-
-    public void turn(double speed, double distance, double timeoutS)
-    {
-        nuetral();
-
-        config.LeftPower = 1*speed;
-        config.RightPower = 1*speed;
-        config.FishTailPower = 1*speed;
-
-        int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
-        int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
-        int Right_wheel_pos = config.RightWheel.getCurrentPosition();
-        int Fish_Tail_pos = config.RightWheel.getCurrentPosition();
-
-        config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
-        config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
-        config.FishTail.setTargetPosition(Fish_Tail_pos+distance_travel);
-
-        config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        config.FishTail.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        runtime.reset();
-        config.LeftWheel.setPower(config.LeftPower);
-        config.RightWheel.setPower(config.RightPower);
-        config.FishTail.setPower(config.FishTailPower);
-
-        while (opModeIsActive() && (runtime.seconds() < timeoutS) && (config.LeftWheel.isBusy() && config.RightWheel.isBusy() && config.FishTail.isBusy()))
-        {
-            if(config.LeftWheel.getCurrentPosition() <= Left_wheel_pos-distance_travel)
-            {
-                brake();
-                break;
-            }
-
-            telemetry.addData("","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
-            telemetry.update();
-        }
-        brake();
-    }
-
-    public void auto_comp()
-    {
-        grip_block(1);
-       move_a(Speed, 89, 10);
-       grip_block(0);
-       move_a(Speed, -30, 10);
-       turn(0.5, 30, 10);
-       move_a(Speed, 146, 10);
-       move_lift(0.5, -0.2, 10);
-       lateral_b(15, 10);
-       move_a(0.5, 15, 10);
-       grip_block(1);
-       move_lift(0.5, 0.2, 10);
-       turn(Speed, 15, 10);
-       move_a(Speed, 60, 10);
-       move_lift(0.5, -0.2, 10);
-       move_c(Speed, 60, 10);
-    }
-
-    public void grip_block(double position)
-    {
-        config.Clamp_Servo.setPosition(position);
-        config.Clamp_Servo_2.setPosition(1-position);
-        sleep(1000);
     }
 
     public void move_lift(double speed, double distance, double timeoutS)
@@ -328,8 +256,123 @@ public class Probox_Autonomousblue extends LinearOpMode
         }
     }
 
-    public void simple()
+    public void grip_block(double position)
     {
-        move_a(Speed, 80, 10);
+        config.Clamp_Servo.setPosition(position);
+        config.Clamp_Servo_2.setPosition(1-position);
+        sleep(1000);
+    }
+    public void turn(double speed, double distance, double timeoutS)
+    {
+        nuetral();
+
+        config.LeftPower = 1*speed;
+        config.RightPower = 1*speed;
+        config.FishTailPower = 1*speed;
+
+        int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
+        int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
+        int Right_wheel_pos = config.RightWheel.getCurrentPosition();
+        int Fish_Tail_pos = config.RightWheel.getCurrentPosition();
+
+        config.LeftWheel.setTargetPosition(Left_wheel_pos+distance_travel);
+        config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
+        config.FishTail.setTargetPosition(Fish_Tail_pos+distance_travel);
+
+        config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        config.FishTail.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        runtime.reset();
+        config.LeftWheel.setPower(config.LeftPower);
+        config.RightWheel.setPower(config.RightPower);
+        config.FishTail.setPower(config.FishTailPower);
+
+        while (opModeIsActive() && (runtime.seconds() < timeoutS))
+        {
+            if(config.LeftWheel.getCurrentPosition() >= Left_wheel_pos+distance_travel)
+            {
+                brake();
+                break;
+            }
+
+            telemetry.addData("","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
+            telemetry.update();
+        }
+        brake();
+    }
+
+    public void anti_turn(double speed, double distance, double timeoutS)
+    {
+        nuetral();
+
+        config.LeftPower = -speed;
+        config.RightPower = -speed;
+        config.FishTailPower = -speed;
+
+        int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
+        int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
+        int Right_wheel_pos = config.RightWheel.getCurrentPosition();
+        int Fish_Tail_pos = config.RightWheel.getCurrentPosition();
+
+        config.LeftWheel.setTargetPosition(Left_wheel_pos-distance_travel);
+        config.RightWheel.setTargetPosition(Right_wheel_pos-distance_travel);
+        config.FishTail.setTargetPosition(Fish_Tail_pos-distance_travel);
+
+        config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        config.FishTail.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        runtime.reset();
+        config.LeftWheel.setPower(config.LeftPower);
+        config.RightWheel.setPower(config.RightPower);
+        config.FishTail.setPower(config.FishTailPower);
+
+        while (opModeIsActive() && (runtime.seconds() < timeoutS))
+        {
+            if(config.LeftWheel.getCurrentPosition() <= Left_wheel_pos-distance_travel)
+            {
+                brake();
+                break;
+            }
+
+            telemetry.addData("","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
+            telemetry.update();
+        }
+        brake();
+    }
+
+    public void move_a(double speed, double distance, double timeoutS)
+    {
+        if (opModeIsActive())
+        {
+            nuetral();
+
+            int distance_travel = (int) (distance/distance_per_rev * Counts_Per_Rev );
+            int Left_wheel_pos = config.LeftWheel.getCurrentPosition();
+            int Right_wheel_pos = config.RightWheel.getCurrentPosition();
+
+            config.LeftWheel.setTargetPosition(Left_wheel_pos-distance_travel);
+            config.RightWheel.setTargetPosition(Right_wheel_pos+distance_travel);
+
+            config.LeftWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            config.RightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            config.LeftWheel.setPower(speed);
+            config.RightWheel.setPower(speed);
+
+            while (opModeIsActive() && (runtime.seconds() < timeoutS))
+            {
+                if(config.LeftWheel.getCurrentPosition() <= Left_wheel_pos-distance_travel)
+                {
+                    brake();
+                    break;
+                }
+                telemetry.addData("Wheel Position","Left Wheel Position:%d\nRight Wheel Position: %d", config.LeftWheel.getCurrentPosition(), config.RightWheel.getCurrentPosition());
+                telemetry.update();
+            }
+            brake();
+        }
     }
 }

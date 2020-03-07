@@ -61,52 +61,76 @@ public class Probox_Autonomousred extends LinearOpMode
 //        drop_under_bridge();
 //        drop_on_foundation();
 //        all_out();
-
+        simple();
+//        foundation();
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
 
+    public void foundation()
+    {
+        move_lift(Speed, 65, 10);
+        move_a(Speed, 65, 10);
+        move_lift(Speed, -65, 10);
+        move_a_back(Speed, 30, 10);
+        anti_turn(Speed, 30, 10);
+        move_a(Speed, 20, 10);
+        move_lift(Speed, 65, 10);
+    }
+
+    public void simple()
+    {
+        move_a(Speed, 80, 10);
+    }
+
     public void all_out()
     {
-        move_a(Speed, 60, 10);
+        move_a(0.75, 65, 10);
         grip_block(0);
-        move_a_back(Speed, 35, 10);
+        move_a_back(Speed, 15, 10);
         anti_turn(Speed, 29, 10);
         move_a(Speed, 190, 10);
 
         turn(Speed, 29, 10);
-        move_lift(Speed, 30, 10);
-        move_a(Speed, 25, 10);
+        move_lift(Speed, 63, 10);
+        move_a(Speed, 35, 10);
+
         grip_block(1);
-        move_lift(Speed, -30, 10);
+        move_lift(Speed, -63, 10);
         move_a_back(Speed, 60, 10);
         anti_turn(Speed, 29, 10);
         move_a(Speed, 20, 10);
-        move_lift(Speed, 30, 10);
+        move_lift(Speed, 63, 10);
         move_a_back(Speed, 45, 10);
-        move_lift(Speed, -30, 10);
+        move_lift(Speed, -63, 10);
         move_a_back(Speed, 45, 10);
     }
 
     public void drop_on_foundation()
     {
         move_a(Speed, 60, 10);
-        grip_block(0);
-        move_a_back(Speed, 35, 10);
-        anti_turn(Speed, 29, 10);
-        move_a(Speed, 190, 10);
+        anti_turn(Speed, 32, 10);
+        move_a(Speed,40, 10);
+//        grip_block(0);
+//        move_a_back(Speed, 15, 10);
+//        anti_turn(Speed, 28, 10);
+//        move_a(Speed, 190, 10);
+//
+//        turn(Speed, 29, 10);
+//        move_lift(Speed, 30, 10);
+//        move_a(Speed, 25, 10);
+//        grip_block(1);
+//
+//        //start returnikn gto bridge
+//        move_a_back(Speed, 25, 10);
+//        move_lift(Speed, -30, 10);
+//        turn(Speed, 29, 10);
+//        move_a(Speed, 90, 10);
+    }
+    public void park()
+    {
 
-        turn(Speed, 29, 10);
-        move_lift(Speed, 30, 10);
-        move_a(Speed, 25, 10);
-        grip_block(1);
-
-        //start returnikn gto bridge
-        move_a_back(Speed, 25, 10);
-        move_lift(Speed, -30, 10);
-        turn(Speed, 29, 10);
-        move_a(Speed, 90, 10);
     }
 
     public void drop_under_bridge()
